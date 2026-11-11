@@ -19,7 +19,7 @@ whenever sqlerror exit sql.sqlcode rollback
 begin
 wwv_flow_imp.import_begin (
  p_version_yyyy_mm_dd=>'2026.04.07'
-,p_release=>'26.2.0'
+,p_release=>'26.2.1'
 ,p_default_workspace_id=>8063087743969253780
 ,p_default_application_id=>188112
 ,p_default_id_offset=>0
@@ -33,15 +33,15 @@ prompt APPLICATION 188112 - Billing Delinquency Analytics
 -- Application Export:
 --   Application:     188112
 --   Name:            Billing Delinquency Analytics
---   Date and Time:   15:42 Tuesday October 27, 2026
+--   Date and Time:   13:27 Wednesday November 11, 2026
 --   Exported By:     ANTDIA4309@STUDENTS.ECPI.EDU
 --   Flashback:       0
 --   Export Type:     Application Export
---     Pages:                      4
---       Items:                    4
+--     Pages:                      6
+--       Items:                   12
 --       Processes:                4
---       Regions:                  8
---       Buttons:                  1
+--       Regions:                 14
+--       Buttons:                  3
 --       Dynamic Actions:          1
 --     Shared Components:
 --       Logic:
@@ -49,7 +49,7 @@ prompt APPLICATION 188112 - Billing Delinquency Analytics
 --       Navigation:
 --         Lists:                  2
 --         Breadcrumbs:            1
---           Entries:              2
+--           Entries:              3
 --       Security:
 --         Authentication:         1
 --         Authorization:          1
@@ -62,7 +62,7 @@ prompt APPLICATION 188112 - Billing Delinquency Analytics
 --       Reports:
 --       E-Mail:
 --     Supporting Objects:  Included
---   Version:         26.2.0
+--   Version:         26.2.1
 --   Instance ID:     63113759365424
 --
 
@@ -106,12 +106,12 @@ wwv_imp_workspace.create_flow(
 ,p_substitution_string_01=>'APP_NAME'
 ,p_substitution_value_01=>'Billing Delinquency Analytics'
 ,p_created_on=>wwv_flow_imp.dz('20261026175846Z')
-,p_last_updated_on=>wwv_flow_imp.dz('20261027153556Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20261110165554Z')
 ,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_last_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_file_prefix=>nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>2461341134606
-,p_version_scn=>'15850135029058'
+,p_version_scn=>'15855875151970'
 ,p_print_server_type=>'INSTANCE'
 ,p_file_storage=>'DB'
 ,p_is_pwa=>'Y'
@@ -375,9 +375,9 @@ wwv_flow_imp_shared.create_list(
  p_id=>wwv_flow_imp.id(8115521094628985156)
 ,p_name=>'Navigation Menu'
 ,p_static_id=>'navigation-menu'
-,p_version_scn=>'SH256:1NjFiHtdYBF6mCAnfeF3LfdwBcxR6id65zqQAxoba8c'
+,p_version_scn=>'SH256:IFtGHEPgjoubdtOeHYSZhKnBAUZRMT281ELqkv2zKmI'
 ,p_created_on=>wwv_flow_imp.dz('20261026175847Z')
-,p_updated_on=>wwv_flow_imp.dz('20261027144649Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110152559Z')
 ,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 );
@@ -405,6 +405,20 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_current_type=>'TARGET_PAGE'
 ,p_created_on=>wwv_flow_imp.dz('20261026175847Z')
 ,p_updated_on=>wwv_flow_imp.dz('20261027141231Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(12686529622814051688)
+,p_list_item_display_sequence=>30
+,p_list_item_link_text=>'Policy Explorer'
+,p_static_id=>'policy-explorer'
+,p_list_item_link_target=>'f?p=&APP_ID.:4:&APP_SESSION.::&DEBUG.:::'
+,p_list_item_icon=>'fa-search'
+,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
+,p_list_item_current_for_pages=>'4'
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110152559Z')
 ,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 );
@@ -870,7 +884,7 @@ wwv_flow_imp_shared.create_menu(
 ,p_name=>'Breadcrumb'
 ,p_static_id=>'breadcrumb'
 ,p_created_on=>wwv_flow_imp.dz('20261026175847Z')
-,p_updated_on=>wwv_flow_imp.dz('20261026181644Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110145222Z')
 ,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 );
@@ -893,6 +907,17 @@ wwv_flow_imp_shared.create_menu_option(
 ,p_page_id=>1
 ,p_created_on=>wwv_flow_imp.dz('20261026175847Z')
 ,p_updated_on=>wwv_flow_imp.dz('20261026175847Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_shared.create_menu_option(
+ p_id=>wwv_flow_imp.id(12677573838590466709)
+,p_short_name=>'Policy Detail'
+,p_static_id=>'policy-detail'
+,p_link=>'f?p=&APP_ID.:3:&APP_SESSION.::&DEBUG.:::'
+,p_page_id=>3
+,p_created_on=>wwv_flow_imp.dz('20261110145222Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110145222Z')
 ,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 );
@@ -1068,7 +1093,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'13'
 ,p_created_on=>wwv_flow_imp.dz('20261026175847Z')
-,p_last_updated_on=>wwv_flow_imp.dz('20261027153556Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20261110164100Z')
 ,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_last_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 );
@@ -1105,7 +1130,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_location=>null
 ,p_plug_source_type=>'NATIVE_JET_CHART'
 ,p_created_on=>wwv_flow_imp.dz('20261026181251Z')
-,p_updated_on=>wwv_flow_imp.dz('20261027143430Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110164100Z')
 ,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 );
@@ -1134,7 +1159,7 @@ wwv_flow_imp_page.create_jet_chart(
 ,p_legend_rendered=>'on'
 ,p_legend_position=>'auto'
 ,p_created_on=>wwv_flow_imp.dz('20261026181251Z')
-,p_updated_on=>wwv_flow_imp.dz('20261027143430Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110164100Z')
 ,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 );
@@ -1167,8 +1192,10 @@ wwv_flow_imp_page.create_jet_chart_series(
 ,p_items_label_column_name=>'PAYMENT_PLAN'
 ,p_assigned_to_y2=>'off'
 ,p_items_label_rendered=>false
+,p_link_target=>'f?p=&APP_ID.:4:&SESSION.::&DEBUG.:4,RP:P4_PAYMENT_PLAN:I&PAYMENT_PLAN.'
+,p_link_target_type=>'REDIRECT_PAGE'
 ,p_created_on=>wwv_flow_imp.dz('20261026181251Z')
-,p_updated_on=>wwv_flow_imp.dz('20261026184424Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110164100Z')
 ,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 );
@@ -1201,8 +1228,10 @@ wwv_flow_imp_page.create_jet_chart_series(
 ,p_items_label_column_name=>'PAYMENT_PLAN'
 ,p_assigned_to_y2=>'off'
 ,p_items_label_rendered=>false
+,p_link_target=>'f?p=&APP_ID.:4:&SESSION.::&DEBUG.:4,RP:P4_PAYMENT_PLAN:I&PAYMENT_PLAN.'
+,p_link_target_type=>'REDIRECT_PAGE'
 ,p_created_on=>wwv_flow_imp.dz('20261026181251Z')
-,p_updated_on=>wwv_flow_imp.dz('20261026184424Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110164100Z')
 ,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 );
@@ -1772,6 +1801,983 @@ wwv_flow_imp_page.create_page_da_action(
   'maintain_pagination', 'N')).to_clob
 ,p_created_on=>wwv_flow_imp.dz('20261026182953Z')
 ,p_updated_on=>wwv_flow_imp.dz('20261026182953Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+end;
+/
+prompt --application/pages/page_00003
+begin
+wwv_flow_imp_page.create_page(
+ p_id=>3
+,p_name=>'Policy Detail'
+,p_alias=>'POLICY-DETAIL'
+,p_step_title=>'Policy Detail'
+,p_autocomplete_on_off=>'OFF'
+,p_step_template=>4075783602716660119
+,p_page_template_options=>'#DEFAULT#'
+,p_protection_level=>'C'
+,p_page_component_map=>'18'
+,p_created_on=>wwv_flow_imp.dz('20261110145222Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20261110165554Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_last_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(12677561492367466675)
+,p_plug_name=>'Breadcrumb'
+,p_static_id=>'breadcrumb'
+,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
+,p_component_template_options=>'#DEFAULT#'
+,p_plug_template=>2534890969069732905
+,p_plug_display_sequence=>10
+,p_plug_display_point=>'REGION_POSITION_01'
+,p_plug_item_display_point=>'ABOVE'
+,p_menu_id=>wwv_flow_imp.id(8115520411771985155)
+,p_plug_source_type=>'NATIVE_BREADCRUMB'
+,p_menu_template_id=>4075790987805660140
+,p_created_on=>wwv_flow_imp.dz('20261110145222Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110145222Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(8118052031071990441)
+,p_plug_name=>'Installment History'
+,p_static_id=>'installment-history'
+,p_title=>'Installment History'
+,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
+,p_plug_template=>4075786578761660127
+,p_plug_display_sequence=>20
+,p_plug_item_display_point=>'ABOVE'
+,p_query_type=>'SQL'
+,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'SELECT installment_num,',
+'       due_date,',
+'       amount_due,',
+'       paid_date,',
+'       amount_paid,',
+'       days_late,',
+'       installment_status,',
+'       written_off_amt,',
+'       amount_due - NVL(amount_paid, 0) AS balance_remaining',
+'FROM   installments',
+'WHERE  policy_id = :P3_POLICY_ID',
+'ORDER  BY installment_num'))
+,p_plug_source_type=>'NATIVE_IR'
+,p_prn_content_disposition=>'ATTACHMENT'
+,p_prn_units=>'INCHES'
+,p_prn_paper_size=>'LETTER'
+,p_prn_width=>11
+,p_prn_height=>8.5
+,p_prn_orientation=>'HORIZONTAL'
+,p_prn_page_header=>'Installment History'
+,p_prn_page_header_font_color=>'#000000'
+,p_prn_page_header_font_family=>'Helvetica'
+,p_prn_page_header_font_weight=>'normal'
+,p_prn_page_header_font_size=>'12'
+,p_prn_page_footer_font_color=>'#000000'
+,p_prn_page_footer_font_family=>'Helvetica'
+,p_prn_page_footer_font_weight=>'normal'
+,p_prn_page_footer_font_size=>'12'
+,p_prn_header_bg_color=>'#EEEEEE'
+,p_prn_header_font_color=>'#000000'
+,p_prn_header_font_family=>'Helvetica'
+,p_prn_header_font_weight=>'bold'
+,p_prn_header_font_size=>'10'
+,p_prn_body_bg_color=>'#FFFFFF'
+,p_prn_body_font_color=>'#000000'
+,p_prn_body_font_family=>'Helvetica'
+,p_prn_body_font_weight=>'normal'
+,p_prn_body_font_size=>'10'
+,p_prn_border_width=>.5
+,p_prn_page_header_alignment=>'CENTER'
+,p_prn_page_footer_alignment=>'CENTER'
+,p_prn_border_color=>'#666666'
+,p_ai_enabled=>false
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110165554Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_worksheet(
+ p_id=>wwv_flow_imp.id(8118052117342990442)
+,p_pagination_type=>'ROWS_X_TO_Y'
+,p_pagination_display_pos=>'BOTTOM_RIGHT'
+,p_report_list_mode=>'TABS'
+,p_lazy_loading=>false
+,p_show_detail_link=>'N'
+,p_show_notify=>'Y'
+,p_download_formats=>'CSV:HTML:XLSX:PDF'
+,p_enable_mail_download=>'Y'
+,p_internal_uid=>8118052117342990442
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110160742Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(8118052457213990445)
+,p_db_column_name=>'AMOUNT_DUE'
+,p_display_order=>30
+,p_column_identifier=>'D'
+,p_column_label=>'Amount Due'
+,p_column_type=>'NUMBER'
+,p_heading_alignment=>'RIGHT'
+,p_column_alignment=>'RIGHT'
+,p_format_mask=>'FML999G999G990D00'
+,p_use_as_row_header=>'N'
+,p_available_clientside=>'N'
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110160742Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(8118052652581990447)
+,p_db_column_name=>'AMOUNT_PAID'
+,p_display_order=>50
+,p_column_identifier=>'F'
+,p_column_label=>'Amount Paid'
+,p_column_type=>'NUMBER'
+,p_heading_alignment=>'RIGHT'
+,p_column_alignment=>'RIGHT'
+,p_format_mask=>'FML999G999G990D00'
+,p_use_as_row_header=>'N'
+,p_available_clientside=>'N'
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110160742Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(12678301203764490301)
+,p_db_column_name=>'BALANCE_REMAINING'
+,p_display_order=>90
+,p_column_identifier=>'A'
+,p_column_label=>'Balance Remaining'
+,p_column_type=>'NUMBER'
+,p_heading_alignment=>'RIGHT'
+,p_column_alignment=>'RIGHT'
+,p_format_mask=>'FML999G999G990D00'
+,p_use_as_row_header=>'N'
+,p_available_clientside=>'N'
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110160742Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(8118052789628990448)
+,p_db_column_name=>'DAYS_LATE'
+,p_display_order=>60
+,p_column_identifier=>'G'
+,p_column_label=>'Days Late'
+,p_column_type=>'NUMBER'
+,p_heading_alignment=>'RIGHT'
+,p_column_alignment=>'RIGHT'
+,p_use_as_row_header=>'N'
+,p_available_clientside=>'N'
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(8118052305106990444)
+,p_db_column_name=>'DUE_DATE'
+,p_display_order=>20
+,p_column_identifier=>'C'
+,p_column_label=>'Due Date'
+,p_column_type=>'DATE'
+,p_heading_alignment=>'LEFT'
+,p_tz_dependent=>'N'
+,p_use_as_row_header=>'N'
+,p_available_clientside=>'N'
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(8118052229568990443)
+,p_db_column_name=>'INSTALLMENT_NUM'
+,p_display_order=>10
+,p_column_identifier=>'B'
+,p_column_label=>'Installment Num'
+,p_column_type=>'NUMBER'
+,p_heading_alignment=>'RIGHT'
+,p_column_alignment=>'RIGHT'
+,p_use_as_row_header=>'N'
+,p_available_clientside=>'N'
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(8118052819031990449)
+,p_db_column_name=>'INSTALLMENT_STATUS'
+,p_display_order=>70
+,p_column_identifier=>'H'
+,p_column_label=>'Installment Status'
+,p_column_type=>'STRING'
+,p_heading_alignment=>'LEFT'
+,p_use_as_row_header=>'N'
+,p_available_clientside=>'N'
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(8118052571510990446)
+,p_db_column_name=>'PAID_DATE'
+,p_display_order=>40
+,p_column_identifier=>'E'
+,p_column_label=>'Paid Date'
+,p_column_type=>'DATE'
+,p_heading_alignment=>'LEFT'
+,p_tz_dependent=>'N'
+,p_use_as_row_header=>'N'
+,p_available_clientside=>'N'
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_worksheet_column(
+ p_id=>wwv_flow_imp.id(8118052996169990450)
+,p_db_column_name=>'WRITTEN_OFF_AMT'
+,p_display_order=>80
+,p_column_identifier=>'I'
+,p_column_label=>'Written Off Amt'
+,p_column_type=>'NUMBER'
+,p_heading_alignment=>'RIGHT'
+,p_column_alignment=>'RIGHT'
+,p_format_mask=>'FML999G999G990D00'
+,p_use_as_row_header=>'N'
+,p_available_clientside=>'N'
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_worksheet_rpt(
+ p_id=>wwv_flow_imp.id(12679359848802514957)
+,p_application_user=>'APXWS_DEFAULT'
+,p_report_seq=>10
+,p_report_alias=>'primary'
+,p_status=>'PUBLIC'
+,p_is_default=>'Y'
+,p_report_columns=>'INSTALLMENT_NUM:DUE_DATE:AMOUNT_DUE:PAID_DATE:AMOUNT_PAID:DAYS_LATE:INSTALLMENT_STATUS:WRITTEN_OFF_AMT:BALANCE_REMAINING'
+,p_created_on=>wwv_flow_imp.dz('20261110150025Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110150025Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(8118050778544990428)
+,p_name=>'Policy Summary'
+,p_static_id=>'policy-summary'
+,p_title=>'Policy Summary'
+,p_template=>4075786578761660127
+,p_display_sequence=>10
+,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:t-Report--altRowsDefault:t-Report--rowHighlight'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'SELECT policy_id, state_code, payment_plan, CASE WHEN autopay_flag THEN ''Y'' ELSE ''N'' END AS autopay_flag, score_tier,',
+'       tenure_years, term_months, annual_premium, policy_status,',
+'       effective_date, cancel_date',
+'FROM   policies',
+'WHERE  policy_id = :P3_POLICY_ID'))
+,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
+,p_query_row_template=>2542081983073888486
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_num_rows_type=>'SHOW_ALL'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110164957Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(8118051542201990436)
+,p_query_column_id=>8
+,p_column_alias=>'ANNUAL_PREMIUM'
+,p_column_display_sequence=>80
+,p_column_heading=>'Annual Premium'
+,p_column_format=>'FML999G999G990D00'
+,p_column_alignment=>'RIGHT'
+,p_heading_alignment=>'RIGHT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(8118051109965990432)
+,p_query_column_id=>4
+,p_column_alias=>'AUTOPAY_FLAG'
+,p_column_display_sequence=>40
+,p_column_heading=>'Autopay'
+,p_heading_alignment=>'LEFT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110164957Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(8118051821320990439)
+,p_query_column_id=>11
+,p_column_alias=>'CANCEL_DATE'
+,p_column_display_sequence=>110
+,p_column_heading=>'Cancel Date'
+,p_heading_alignment=>'LEFT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(8118051779722990438)
+,p_query_column_id=>10
+,p_column_alias=>'EFFECTIVE_DATE'
+,p_column_display_sequence=>100
+,p_column_heading=>'Effective Date'
+,p_heading_alignment=>'LEFT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(8118051016098990431)
+,p_query_column_id=>3
+,p_column_alias=>'PAYMENT_PLAN'
+,p_column_display_sequence=>30
+,p_column_heading=>'Payment Plan'
+,p_heading_alignment=>'LEFT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(8118050821528990429)
+,p_query_column_id=>1
+,p_column_alias=>'POLICY_ID'
+,p_column_display_sequence=>10
+,p_column_heading=>'Policy Id'
+,p_heading_alignment=>'LEFT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110164957Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(8118051632822990437)
+,p_query_column_id=>9
+,p_column_alias=>'POLICY_STATUS'
+,p_column_display_sequence=>90
+,p_column_heading=>'Status'
+,p_heading_alignment=>'LEFT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110164957Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(8118051298307990433)
+,p_query_column_id=>5
+,p_column_alias=>'SCORE_TIER'
+,p_column_display_sequence=>50
+,p_column_heading=>'Score Tier'
+,p_heading_alignment=>'LEFT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(8118050960252990430)
+,p_query_column_id=>2
+,p_column_alias=>'STATE_CODE'
+,p_column_display_sequence=>20
+,p_column_heading=>'State'
+,p_heading_alignment=>'LEFT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110164957Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(8118051368626990434)
+,p_query_column_id=>6
+,p_column_alias=>'TENURE_YEARS'
+,p_column_display_sequence=>60
+,p_column_heading=>'Tenure (Yrs)'
+,p_column_alignment=>'RIGHT'
+,p_heading_alignment=>'RIGHT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110164957Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(8118051463610990435)
+,p_query_column_id=>7
+,p_column_alias=>'TERM_MONTHS'
+,p_column_display_sequence=>70
+,p_column_heading=>'Term Months'
+,p_column_alignment=>'RIGHT'
+,p_heading_alignment=>'RIGHT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(12678301471175490303)
+,p_button_sequence=>30
+,p_button_plug_id=>wwv_flow_imp.id(8118050778544990428)
+,p_button_name=>'Back'
+,p_static_id=>'back'
+,p_show_as_disabled=>false
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#'
+,p_button_template_id=>4075790603270660137
+,p_button_image_alt=>'Back to Explorer'
+,p_button_redirect_url=>'f?p=&APP_ID.:4:&SESSION.::&DEBUG.:::'
+,p_warn_on_unsaved_changes=>null
+,p_icon_css_classes=>'fa-arrow-left'
+,p_grid_new_row=>'Y'
+,p_created_on=>wwv_flow_imp.dz('20261110164341Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110164341Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(8118051990831990440)
+,p_name=>'P3_POLICY_ID'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(8118050778544990428)
+,p_source_type=>'ALWAYS_NULL'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'value_protected', 'Y')).to_clob
+,p_created_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110145954Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+end;
+/
+prompt --application/pages/page_00004
+begin
+wwv_flow_imp_page.create_page(
+ p_id=>4
+,p_name=>'Policy Explorer'
+,p_alias=>'POLICY-EXPLORER'
+,p_step_title=>'Policy Explorer'
+,p_autocomplete_on_off=>'OFF'
+,p_step_template=>2530071015796209513
+,p_page_template_options=>'#DEFAULT#'
+,p_page_is_public_y_n=>'Y'
+,p_protection_level=>'C'
+,p_page_component_map=>'22'
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_last_updated_on=>wwv_flow_imp.dz('20261110155958Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_last_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(12686533857824051727)
+,p_plug_name=>'Button Bar'
+,p_static_id=>'button-bar'
+,p_region_template_options=>'#DEFAULT#:t-ButtonRegion--noPadding:t-ButtonRegion--noUI'
+,p_plug_template=>2129856781885180476
+,p_plug_display_sequence=>10
+,p_plug_item_display_point=>'ABOVE'
+,p_plug_source=>'<div id="active_facets"></div>'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'expand_shortcuts', 'N',
+  'output_as', 'HTML')).to_clob
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(12686530171574051691)
+,p_plug_name=>'Search'
+,p_static_id=>'search'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_plug_template=>4075786578761660127
+,p_plug_display_sequence=>10
+,p_plug_grid_column_span=>4
+,p_plug_display_point=>'REGION_POSITION_02'
+,p_plug_item_display_point=>'ABOVE'
+,p_plug_source_type=>'NATIVE_FACETED_SEARCH'
+,p_filtered_region_id=>wwv_flow_imp.id(12686530044499051691)
+,p_landmark_label=>'Filters'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'batch_facet_search', 'N',
+  'compact_numbers_threshold', '10000',
+  'current_facets_selector', '#active_facets',
+  'display_chart_for_top_n_values', '10',
+  'show_charts', 'Y',
+  'show_current_facets', 'E',
+  'show_total_row_count', 'Y')).to_clob
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(12686532308027051725)
+,p_name=>'P4_AUTOPAY_FLAG'
+,p_source_data_type=>'VARCHAR2'
+,p_item_sequence=>30
+,p_item_plug_id=>wwv_flow_imp.id(12686530171574051691)
+,p_prompt=>'Autopay'
+,p_source=>'AUTOPAY_FLAG'
+,p_source_type=>'FACET_COLUMN'
+,p_display_as=>'NATIVE_CHECKBOX'
+,p_lov_sort_direction=>'ASC'
+,p_fc_show_label=>true
+,p_fc_collapsible=>false
+,p_fc_compute_counts=>true
+,p_fc_show_counts=>true
+,p_fc_zero_count_entries=>'H'
+,p_fc_show_more_count=>7
+,p_fc_filter_values=>false
+,p_fc_sort_by_top_counts=>true
+,p_fc_show_selected_first=>false
+,p_fc_show_chart=>true
+,p_fc_initial_chart=>false
+,p_fc_actions_filter=>true
+,p_fc_display_as=>'INLINE'
+,p_fc_exclude_allowed=>true
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(12686533567549051727)
+,p_name=>'P4_HAS_MISSED'
+,p_source_data_type=>'VARCHAR2'
+,p_item_sequence=>50
+,p_item_plug_id=>wwv_flow_imp.id(12686530171574051691)
+,p_prompt=>'Has Missed Payment'
+,p_source=>'HAS_MISSED'
+,p_source_type=>'FACET_COLUMN'
+,p_display_as=>'NATIVE_CHECKBOX'
+,p_lov_sort_direction=>'ASC'
+,p_fc_show_label=>true
+,p_fc_collapsible=>false
+,p_fc_compute_counts=>true
+,p_fc_show_counts=>true
+,p_fc_zero_count_entries=>'H'
+,p_fc_show_more_count=>7
+,p_fc_filter_values=>false
+,p_fc_sort_by_top_counts=>true
+,p_fc_show_selected_first=>false
+,p_fc_show_chart=>true
+,p_fc_initial_chart=>false
+,p_fc_actions_filter=>true
+,p_fc_display_as=>'INLINE'
+,p_fc_exclude_allowed=>true
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(12686531994969051725)
+,p_name=>'P4_PAYMENT_PLAN'
+,p_source_data_type=>'VARCHAR2'
+,p_item_sequence=>20
+,p_item_plug_id=>wwv_flow_imp.id(12686530171574051691)
+,p_prompt=>'Payment Plan'
+,p_source=>'PAYMENT_PLAN'
+,p_source_type=>'FACET_COLUMN'
+,p_display_as=>'NATIVE_CHECKBOX'
+,p_lov_sort_direction=>'ASC'
+,p_fc_show_label=>true
+,p_fc_collapsible=>false
+,p_fc_compute_counts=>true
+,p_fc_show_counts=>true
+,p_fc_zero_count_entries=>'H'
+,p_fc_show_more_count=>7
+,p_fc_filter_values=>false
+,p_fc_sort_by_top_counts=>true
+,p_fc_show_selected_first=>false
+,p_fc_show_chart=>true
+,p_fc_initial_chart=>false
+,p_fc_actions_filter=>true
+,p_fc_display_as=>'INLINE'
+,p_fc_exclude_allowed=>true
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(12686533102133051726)
+,p_name=>'P4_POLICY_STATUS'
+,p_source_data_type=>'VARCHAR2'
+,p_item_sequence=>60
+,p_item_plug_id=>wwv_flow_imp.id(12686530171574051691)
+,p_prompt=>'Status'
+,p_source=>'POLICY_STATUS'
+,p_source_type=>'FACET_COLUMN'
+,p_display_as=>'NATIVE_CHECKBOX'
+,p_lov_sort_direction=>'ASC'
+,p_fc_show_label=>true
+,p_fc_collapsible=>false
+,p_fc_compute_counts=>true
+,p_fc_show_counts=>true
+,p_fc_zero_count_entries=>'H'
+,p_fc_show_more_count=>7
+,p_fc_filter_values=>false
+,p_fc_sort_by_top_counts=>true
+,p_fc_show_selected_first=>false
+,p_fc_show_chart=>true
+,p_fc_initial_chart=>false
+,p_fc_actions_filter=>true
+,p_fc_display_as=>'INLINE'
+,p_fc_exclude_allowed=>true
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(12686532794494051726)
+,p_name=>'P4_SCORE_TIER'
+,p_source_data_type=>'VARCHAR2'
+,p_item_sequence=>40
+,p_item_plug_id=>wwv_flow_imp.id(12686530171574051691)
+,p_prompt=>'Score Tier'
+,p_source=>'SCORE_TIER'
+,p_source_type=>'FACET_COLUMN'
+,p_display_as=>'NATIVE_CHECKBOX'
+,p_lov_sort_direction=>'ASC'
+,p_fc_show_label=>true
+,p_fc_collapsible=>false
+,p_fc_compute_counts=>true
+,p_fc_show_counts=>true
+,p_fc_zero_count_entries=>'H'
+,p_fc_show_more_count=>7
+,p_fc_filter_values=>false
+,p_fc_sort_by_top_counts=>true
+,p_fc_show_selected_first=>false
+,p_fc_show_chart=>true
+,p_fc_initial_chart=>false
+,p_fc_actions_filter=>true
+,p_fc_display_as=>'INLINE'
+,p_fc_exclude_allowed=>true
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(12686530767036051724)
+,p_name=>'P4_SEARCH'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(12686530171574051691)
+,p_prompt=>'Search'
+,p_source=>'POLICY_ID,STATE_CODE,PAYMENT_PLAN,POLICY_STATUS'
+,p_source_type=>'FACET_COLUMN'
+,p_display_as=>'NATIVE_SEARCH'
+,p_attributes=>wwv_flow_t_plugin_attributes(wwv_flow_t_varchar2(
+  'input_field', 'FACET',
+  'search_type', 'ROW')).to_clob
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(12686531590433051725)
+,p_name=>'P4_STATE_CODE'
+,p_source_data_type=>'VARCHAR2'
+,p_item_sequence=>70
+,p_item_plug_id=>wwv_flow_imp.id(12686530171574051691)
+,p_prompt=>'State'
+,p_source=>'STATE_CODE'
+,p_source_type=>'FACET_COLUMN'
+,p_display_as=>'NATIVE_CHECKBOX'
+,p_lov_sort_direction=>'ASC'
+,p_fc_show_label=>true
+,p_fc_collapsible=>false
+,p_fc_compute_counts=>true
+,p_fc_show_counts=>true
+,p_fc_zero_count_entries=>'H'
+,p_fc_show_more_count=>7
+,p_fc_filter_values=>false
+,p_fc_sort_by_top_counts=>true
+,p_fc_show_selected_first=>false
+,p_fc_show_chart=>true
+,p_fc_initial_chart=>false
+,p_fc_actions_filter=>true
+,p_fc_display_as=>'INLINE'
+,p_fc_exclude_allowed=>true
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(12686530044499051691)
+,p_name=>'Search Results'
+,p_static_id=>'search-results'
+,p_template=>4075786578761660127
+,p_display_sequence=>20
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--staticRowColors:t-Report--rowHighlight:t-Report--inline:t-Report--hideNoPagination'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'TABLE'
+,p_query_table=>'POLICY_EXPLORER_V'
+,p_include_rowid_column=>false
+,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
+,p_query_row_template=>2542081983073888486
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_no_data_found=>'No data found.'
+,p_query_num_rows_type=>'NEXT_PREVIOUS_LINKS'
+,p_query_row_count_max=>100000
+,p_pagination_display_position=>'BOTTOM_RIGHT'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+,p_created_on=>wwv_flow_imp.dz('20261110152604Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110155958Z')
+,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686574856845052266)
+,p_query_column_id=>8
+,p_column_alias=>'ANNUAL_PREMIUM'
+,p_column_display_sequence=>8
+,p_column_heading=>'Annual Premium'
+,p_column_format=>'FML999G999G990D00'
+,p_column_alignment=>'RIGHT'
+,p_heading_alignment=>'RIGHT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686573241960052262)
+,p_query_column_id=>4
+,p_column_alias=>'AUTOPAY_FLAG'
+,p_column_display_sequence=>4
+,p_column_heading=>'Autopay'
+,p_heading_alignment=>'LEFT'
+,p_default_sort_column_sequence=>1
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110155958Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686576871575052271)
+,p_query_column_id=>13
+,p_column_alias=>'HAS_MISSED'
+,p_column_display_sequence=>13
+,p_column_heading=>'Has Missed'
+,p_heading_alignment=>'LEFT'
+,p_default_sort_column_sequence=>1
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686575230447052267)
+,p_query_column_id=>9
+,p_column_alias=>'INSTALLMENTS'
+,p_column_display_sequence=>9
+,p_column_heading=>'Installments'
+,p_column_alignment=>'RIGHT'
+,p_heading_alignment=>'RIGHT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110152604Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686575623430052268)
+,p_query_column_id=>10
+,p_column_alias=>'LATE_COUNT'
+,p_column_display_sequence=>10
+,p_column_heading=>'Late'
+,p_column_alignment=>'RIGHT'
+,p_heading_alignment=>'RIGHT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686576015765052269)
+,p_query_column_id=>11
+,p_column_alias=>'MISSED_COUNT'
+,p_column_display_sequence=>11
+,p_column_heading=>'Missed'
+,p_heading_alignment=>'LEFT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686572876637052261)
+,p_query_column_id=>3
+,p_column_alias=>'PAYMENT_PLAN'
+,p_column_display_sequence=>3
+,p_column_heading=>'Payment Plan'
+,p_heading_alignment=>'LEFT'
+,p_default_sort_column_sequence=>1
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110152604Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686572068195052259)
+,p_query_column_id=>1
+,p_column_alias=>'POLICY_ID'
+,p_column_display_sequence=>1
+,p_column_heading=>'Policy Id'
+,p_column_link=>'f?p=&APP_ID.:3:&SESSION.::&DEBUG.:3:P3_POLICY_ID:#POLICY_ID#'
+,p_column_linktext=>'#POLICY_ID#'
+,p_heading_alignment=>'LEFT'
+,p_default_sort_column_sequence=>1
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686574067491052264)
+,p_query_column_id=>6
+,p_column_alias=>'POLICY_STATUS'
+,p_column_display_sequence=>6
+,p_column_heading=>'Status'
+,p_heading_alignment=>'LEFT'
+,p_default_sort_column_sequence=>1
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110155958Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686573612379052263)
+,p_query_column_id=>5
+,p_column_alias=>'SCORE_TIER'
+,p_column_display_sequence=>5
+,p_column_heading=>'Score Tier'
+,p_heading_alignment=>'LEFT'
+,p_default_sort_column_sequence=>1
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110152604Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686572423736052260)
+,p_query_column_id=>2
+,p_column_alias=>'STATE_CODE'
+,p_column_display_sequence=>2
+,p_column_heading=>'State'
+,p_heading_alignment=>'LEFT'
+,p_default_sort_column_sequence=>1
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110155958Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686574480737052265)
+,p_query_column_id=>7
+,p_column_alias=>'TENURE_YEARS'
+,p_column_display_sequence=>7
+,p_column_heading=>'Tenure (Yrs)'
+,p_column_alignment=>'RIGHT'
+,p_heading_alignment=>'RIGHT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110155958Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(12686576425868052270)
+,p_query_column_id=>12
+,p_column_alias=>'WRITTEN_OFF'
+,p_column_display_sequence=>12
+,p_column_heading=>'Written Off'
+,p_column_format=>'FML999G999G990D00'
+,p_heading_alignment=>'LEFT'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+,p_updated_on=>wwv_flow_imp.dz('20261110154102Z')
+,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(12686534244846051728)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_imp.id(12686533857824051727)
+,p_button_name=>'RESET'
+,p_static_id=>'reset'
+,p_show_as_disabled=>false
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--noUI:t-Button--iconLeft'
+,p_button_template_id=>2086257187394300437
+,p_button_image_alt=>'Reset'
+,p_button_position=>'NEXT'
+,p_button_redirect_url=>'f?p=&APP_ID.:4:&APP_SESSION.::&DEBUG.:RR,4::'
+,p_icon_css_classes=>'fa-undo'
+,p_created_on=>wwv_flow_imp.dz('20261110152559Z')
+,p_updated_on=>wwv_flow_imp.dz('20261110152559Z')
 ,p_created_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 ,p_updated_by=>'ANTDIA4309@STUDENTS.ECPI.EDU'
 );
