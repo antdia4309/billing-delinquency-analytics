@@ -1,6 +1,6 @@
 # Billing Delinquency Analytics
 
-Billing delinquency analysis and a collections workbench on a synthetic P&C insurance book, built with **Oracle SQL** and **Oracle APEX**.
+Billing delinquency analysis and a collections workbench on a synthetic P&C insurance book, built with **Oracle SQL**, **PL/SQL**, and **Oracle APEX**.
 
 **🔗 Live app:** [Billing Delinquency Analytics](https://oracleapex.com/ords/r/antdia4309_ecpi/billing-delinquency-analytics/home)
 
@@ -15,7 +15,7 @@ Missed installments turn into cancellations and write-offs. This project looks a
 1. **Where does delinquency come from?** Which payment plans, autopay statuses, and risk tiers drive missed payments and bad debt?
 2. **Where is it heading?** What's the trend, and what should we expect over the next quarter?
 3. **What would autopay adoption be worth?** If more customers moved to autopay, how much would write-offs change?
-4. **How do we work the delinquent accounts?** Which accounts need attention today, and what's happened on each one so far?
+4. **How do we work the delinquent accounts?** Which accounts need attention today, how risky is each one, and what's happened on it so far?
 
 ---
 
@@ -51,7 +51,7 @@ recreates the exact dataset used in the app. The CSVs were then loaded into Orac
 
 ## The SQL
 
-Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.sql). Phase 1 queries 7–8 are in [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql). Phase 2 objects 9–12 are in [`sql/phase2_collections.sql`](sql/phase2_collections.sql).
+Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.sql). Phase 1 queries 7–8 are in [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql). Phase 2 objects 9–12 are in [`sql/phase2_collections.sql`](sql/phase2_collections.sql). Phase 3 objects 13–16 are in [`sql/phase3_collections_pkg.sql`](sql/phase3_collections_pkg.sql).
 
 | # | Query | Techniques | Used in app |
 |---|---|---|---|
@@ -67,6 +67,10 @@ Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.
 | 10 | `COLLECTIONS_QUEUE_V` view | `KEEP (DENSE_RANK LAST)` for latest action, derived status and priority | Collections Queue |
 | 11 | Workbench validations | PL/SQL expressions on grid rows and form items | Policy Collections, Log Contact |
 | 12 | Seed activity (optional) | Repeatable sample data with `ORA_HASH` | — |
+| 13 | Audit table and trigger | Row-level `AFTER` trigger, `:OLD`/`:NEW`, `INSERTING`/`UPDATING` | Audit History |
+| 14 | `DUNNING_NOTICES` table | Unique key on policy + level to prevent duplicate notices | Dunning Notices |
+| 15 | `COLLECTIONS_PKG` package | Spec vs. body, functions and procedures, cursor FOR loop, `%TYPE`, exception handling, private helper | Queue risk score, Generate Notices |
+| 16 | Package tests | Anonymous PL/SQL blocks, `DBMS_OUTPUT`, simulated dates | — |
 
 ---
 
@@ -92,17 +96,23 @@ Built in Oracle APEX. The analytics pages are public; the collections workbench 
 
 ### Collections workbench (login required)
 
-**Collections Queue.** Every policy with a missed payment, prioritized for a collector: overdue follow-ups first, then accounts never contacted, then in-progress, then closed, with the largest written-off balances first within each group. Overdue rows are highlighted red and written-off balances amber.
+**Collections Queue.** Every policy with a missed payment, prioritized for a collector: overdue follow-ups first, then accounts never contacted, then in-progress, then closed. Within each group, accounts are ordered by a 0–100 **risk score** calculated in PL/SQL. Overdue rows are highlighted red, HIGH-risk bands dark red, and written-off balances amber.
 
 ![Collections Queue](screenshots/Collections-Queue.png)
 
-**Policy Collections.** One policy's contact history in an editable Interactive Grid. Collectors can add, fix, or remove contact attempts inline, and the policy's queue status updates on save.
+**Policy Collections.** One policy's contact history in an editable Interactive Grid. Collectors can add, fix, or remove contact attempts inline, and the policy's queue status updates on save. An **Audit History** region shows every change to that history, with who made it, when, and the before/after values, captured by a database trigger.
 
 ![Policy Collections](screenshots/Policy-Collections.png)
+
+![Audit History](screenshots/Audit-History.png)
 
 **Log Contact.** A modal form for logging a call, email, letter, or text. Promise-to-pay fields only appear when the outcome is Promise to Pay, and validations catch missing or inconsistent promises before they reach the database.
 
 ![Log Contact](screenshots/Log-Contact.png)
+
+**Dunning Notices.** Escalating notices (first, second, final) for written-off balances. The **Generate Notices** button calls a PL/SQL procedure that skips closed accounts, honors active promises to pay, waits at least 14 days between notices, and never sends the same notice twice. Each notice carries the policy's risk score at the time it was generated.
+
+![Dunning Notices](screenshots/Dunning-Notices.png)
 
 ### Setup
 
@@ -111,6 +121,7 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 2. Load the two tables from the generator's CSVs.
 3. Run [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql) to create the `POLICY_EXPLORER_V` view.
 4. Run [`sql/phase2_collections.sql`](sql/phase2_collections.sql) to create the collections table and queue view (the seed script at the end is optional).
+5. Run [`sql/phase3_collections_pkg.sql`](sql/phase3_collections_pkg.sql) to create the audit trigger, notices table, and `COLLECTIONS_PKG` package.
 
 ---
 
@@ -141,6 +152,7 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 - **Moderate forecast fit.** The linear trend has an R² of **0.38**, so it explains only part of the month-to-month variation. Seasonality accounts for much of the rest. Treat the forecast as directional.
 - **Early-month ramp-up.** Jan–Mar 2024 are excluded from the trend chart. The book was still ramping up and only first installments were due, which made those months look artificially low.
 - **Write-offs are per installment.** Only the missed installment is written off. Once a policy cancels, its remaining installments are never billed, so unearned premium isn't counted.
+- **Rule-based risk score.** The risk score is a transparent weighted rule set, not a trained model. Every score can be explained factor by factor, but the weights are judgment calls, not fitted to outcomes.
 - **Seeded collections activity.** Contact history in the workbench is sample data from the seed script, tagged `SEED_DATA`. It shows how the queue behaves, not real collection results.
 - **Synthetic data.** The patterns are built in on purpose. The point of the project is the method, not the specific numbers.
 
@@ -153,6 +165,7 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 | v1.0 | Analytics dashboard | Dashboard, trend and forecast, autopay scenario tool |
 | v1.1 | Phase 1: Drill-down & exploration | Policy Explorer (faceted search), Policy Detail page, chart-to-explorer drill-down |
 | v1.2 | Phase 2: Collections workbench | Collections Queue, Policy Collections (editable grid), Log Contact modal form, login-protected pages |
+| v1.3 | Phase 3: PL/SQL business logic | Audit trigger, `COLLECTIONS_PKG` (risk score, dunning notices), Dunning Notices page, Audit History region |
 
 **Implementation notes from Phase 1:**
 - `AUTOPAY_FLAG` loaded as an Oracle `BOOLEAN`, which the faceted search wizard can't use as a facet. The view converts it to `'Y'`/`'N'` text.
@@ -165,11 +178,18 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 - **Priority, not alphabet.** Sorting the queue by status text put closed accounts first, so the view adds a numeric `QUEUE_PRIORITY` that drives the default sort.
 - **Writable pages need a login.** The workbench pages require authentication and their menu entry is hidden from public visitors, while the analytics pages stay public.
 
+**Implementation notes from Phase 3:**
+- **Business logic lives in the database.** Risk scoring and dunning rules are in a PL/SQL package, so any screen, report, or future API gets the same answer. APEX only calls the package's public interface.
+- **Private functions can't be called from SQL.** The notice-text helper is private to the package body, so the procedure computes it in PL/SQL before the `INSERT` instead of calling it inside the SQL statement.
+- **Watch out for NULL in `NOT (...)`.** The first version of the promise-to-pay check silently skipped every never-contacted account, because `NOT (NULL = 'X' AND ...)` evaluates to unknown and the row is dropped. `NVL` around the nullable columns fixed it, taking first notices from 266 to the expected ~720.
+- **Double protection against duplicate notices.** The procedure enforces a 14-day gap and a three-notice cap, and a unique key on policy + notice level backs it up in the database.
+- **Audit rows outlive the data.** The audit table has no foreign key to the actions table, so history survives when a contact attempt is deleted.
+- **New columns on a saved Interactive Report start hidden.** After changing a report's source, new columns land on the Do Not Display list and have to be added back through Actions → Columns.
+
 ---
 
 ## Possible next steps
 
-- **Phase 3:** PL/SQL package for risk scoring and dunning notices, plus an audit trigger
 - **Phase 4:** automations to flag newly at-risk policies nightly
 - **Phase 5:** roles (Collector vs. Manager) with authorization schemes
 - Add a seasonal factor to the forecast
@@ -189,7 +209,8 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 ├── sql/
 │   ├── analysis_queries.sql          # Analysis queries 1–6
 │   ├── phase1_explorer_queries.sql   # Phase 1: explorer view + detail queries
-│   └── phase2_collections.sql        # Phase 2: collections table, queue view, seed data
+│   ├── phase2_collections.sql        # Phase 2: collections table, queue view, seed data
+│   └── phase3_collections_pkg.sql    # Phase 3: audit trigger, notices table, COLLECTIONS_PKG
 └── screenshots/
 ```
 
