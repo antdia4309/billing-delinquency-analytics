@@ -1,6 +1,6 @@
 # Billing Delinquency Analytics
 
-Billing delinquency and autopay scenario analysis on a synthetic P&C insurance book, built with **Oracle SQL** and an interactive **Oracle APEX** dashboard.
+Billing delinquency analysis and a collections workbench on a synthetic P&C insurance book, built with **Oracle SQL** and **Oracle APEX**.
 
 **🔗 Live app:** [Billing Delinquency Analytics](https://oracleapex.com/ords/r/antdia4309_ecpi/billing-delinquency-analytics/home)
 
@@ -15,6 +15,7 @@ Missed installments turn into cancellations and write-offs. This project looks a
 1. **Where does delinquency come from?** Which payment plans, autopay statuses, and risk tiers drive missed payments and bad debt?
 2. **Where is it heading?** What's the trend, and what should we expect over the next quarter?
 3. **What would autopay adoption be worth?** If more customers moved to autopay, how much would write-offs change?
+4. **How do we work the delinquent accounts?** Which accounts need attention today, and what's happened on each one so far?
 
 ---
 
@@ -50,7 +51,7 @@ recreates the exact dataset used in the app. The CSVs were then loaded into Orac
 
 ## The SQL
 
-Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.sql). Phase 1 queries 7–8 are in [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql).
+Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.sql). Phase 1 queries 7–8 are in [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql). Phase 2 objects 9–12 are in [`sql/phase2_collections.sql`](sql/phase2_collections.sql).
 
 | # | Query | Techniques | Used in app |
 |---|---|---|---|
@@ -62,12 +63,18 @@ Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.
 | 6 | Autopay scenario | Bind variable from page input, weighted projection | Autopay Projections page |
 | 7 | `POLICY_EXPLORER_V` view | `LEFT JOIN` rollup, conditional aggregation, BOOLEAN → text conversion | Policy Explorer |
 | 8 | Policy detail | Bind variable from link, derived balance column | Policy Detail |
+| 9 | `COLLECTION_ACTIONS` table | Identity key, foreign key, check constraints, `DEFAULT ON NULL` audit columns | Collections workbench |
+| 10 | `COLLECTIONS_QUEUE_V` view | `KEEP (DENSE_RANK LAST)` for latest action, derived status and priority | Collections Queue |
+| 11 | Workbench validations | PL/SQL expressions on grid rows and form items | Policy Collections, Log Contact |
+| 12 | Seed activity (optional) | Repeatable sample data with `ORA_HASH` | — |
 
 ---
 
 ## The app
 
-Built in Oracle APEX with four pages:
+Built in Oracle APEX. The analytics pages are public; the collections workbench requires a login.
+
+### Analytics (public)
 
 **Dashboard.** Delinquency by payment plan, the monthly missed-payment trend with a 3-month moving average, and a 3-month forecast. Click any bar to drill into those policies.
 
@@ -83,7 +90,27 @@ Built in Oracle APEX with four pages:
 
 ![Autopay Projections](screenshots/Autopay-Projections.png)
 
-The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). Import it through **App Builder → Import** in any APEX workspace, load the two tables, then run [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql) to create the `POLICY_EXPLORER_V` view.
+### Collections workbench (login required)
+
+**Collections Queue.** Every policy with a missed payment, prioritized for a collector: overdue follow-ups first, then accounts never contacted, then in-progress, then closed, with the largest written-off balances first within each group. Overdue rows are highlighted red and written-off balances amber.
+
+![Collections Queue](screenshots/Collections-Queue.png)
+
+**Policy Collections.** One policy's contact history in an editable Interactive Grid. Collectors can add, fix, or remove contact attempts inline, and the policy's queue status updates on save.
+
+![Policy Collections](screenshots/Policy-Collections.png)
+
+**Log Contact.** A modal form for logging a call, email, letter, or text. Promise-to-pay fields only appear when the outcome is Promise to Pay, and validations catch missing or inconsistent promises before they reach the database.
+
+![Log Contact](screenshots/Log-Contact.png)
+
+### Setup
+
+The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in your own workspace:
+1. Import it through **App Builder → Import**.
+2. Load the two tables from the generator's CSVs.
+3. Run [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql) to create the `POLICY_EXPLORER_V` view.
+4. Run [`sql/phase2_collections.sql`](sql/phase2_collections.sql) to create the collections table and queue view (the seed script at the end is optional).
 
 ---
 
@@ -114,6 +141,7 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). Import it thro
 - **Moderate forecast fit.** The linear trend has an R² of **0.38**, so it explains only part of the month-to-month variation. Seasonality accounts for much of the rest. Treat the forecast as directional.
 - **Early-month ramp-up.** Jan–Mar 2024 are excluded from the trend chart. The book was still ramping up and only first installments were due, which made those months look artificially low.
 - **Write-offs are per installment.** Only the missed installment is written off. Once a policy cancels, its remaining installments are never billed, so unearned premium isn't counted.
+- **Seeded collections activity.** Contact history in the workbench is sample data from the seed script, tagged `SEED_DATA`. It shows how the queue behaves, not real collection results.
 - **Synthetic data.** The patterns are built in on purpose. The point of the project is the method, not the specific numbers.
 
 ---
@@ -124,17 +152,26 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). Import it thro
 |---|---|---|
 | v1.0 | Analytics dashboard | Dashboard, trend and forecast, autopay scenario tool |
 | v1.1 | Phase 1: Drill-down & exploration | Policy Explorer (faceted search), Policy Detail page, chart-to-explorer drill-down |
+| v1.2 | Phase 2: Collections workbench | Collections Queue, Policy Collections (editable grid), Log Contact modal form, login-protected pages |
 
 **Implementation notes from Phase 1:**
 - `AUTOPAY_FLAG` loaded as an Oracle `BOOLEAN`, which the faceted search wizard can't use as a facet. The view converts it to `'Y'`/`'N'` text.
 - In APEX 26, a facet value passed through a link needs a one-character filter prefix: `I` to include, `E` to exclude. The chart links set `P4_PAYMENT_PLAN = I&PAYMENT_PLAN.` with Clear Cache `4,RP`.
 
+**Implementation notes from Phase 2:**
+- **Validation in two layers.** APEX validations give users clear, inline messages; table check constraints stay underneath as a backstop so bad data can't get in through any other path.
+- **Grid values are text.** In Interactive Grid validations, values arrive formatted (`$500.00`, `Nov 18, 2026`), so the expressions strip currency symbols and parse dates with the column's format mask.
+- **Database-owned audit columns.** `CREATED_BY` and `CREATED_ON` are filled by `DEFAULT ON NULL` defaults, so the APEX columns are set to Query Only and left out of inserts.
+- **Priority, not alphabet.** Sorting the queue by status text put closed accounts first, so the view adds a numeric `QUEUE_PRIORITY` that drives the default sort.
+- **Writable pages need a login.** The workbench pages require authentication and their menu entry is hidden from public visitors, while the analytics pages stay public.
+
 ---
 
 ## Possible next steps
 
-- **Phase 2:** collections workbench with an editable work queue (Interactive Grid, forms, validations)
 - **Phase 3:** PL/SQL package for risk scoring and dunning notices, plus an audit trigger
+- **Phase 4:** automations to flag newly at-risk policies nightly
+- **Phase 5:** roles (Collector vs. Manager) with authorization schemes
 - Add a seasonal factor to the forecast
 - Add a grace-period scenario (e.g., 10 → 20 days)
 - Re-run the autopay scenario within score tiers to correct for selection bias
@@ -151,7 +188,8 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). Import it thro
 │   └── generate_billing_data.py      # Synthetic data generator
 ├── sql/
 │   ├── analysis_queries.sql          # Analysis queries 1–6
-│   └── phase1_explorer_queries.sql   # Phase 1: explorer view + detail queries
+│   ├── phase1_explorer_queries.sql   # Phase 1: explorer view + detail queries
+│   └── phase2_collections.sql        # Phase 2: collections table, queue view, seed data
 └── screenshots/
 ```
 
