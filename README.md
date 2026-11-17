@@ -16,6 +16,7 @@ Missed installments turn into cancellations and write-offs. This project looks a
 2. **Where is it heading?** What's the trend, and what should we expect over the next quarter?
 3. **What would autopay adoption be worth?** If more customers moved to autopay, how much would write-offs change?
 4. **How do we work the delinquent accounts?** Which accounts need attention today, how risky is each one, and what's happened on it so far?
+5. **What changed overnight?** Which accounts just became high risk, and which promises to pay were broken?
 
 ---
 
@@ -51,7 +52,7 @@ recreates the exact dataset used in the app. The CSVs were then loaded into Orac
 
 ## The SQL
 
-Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.sql). Phase 1 queries 7–8 are in [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql). Phase 2 objects 9–12 are in [`sql/phase2_collections.sql`](sql/phase2_collections.sql). Phase 3 objects 13–16 are in [`sql/phase3_collections_pkg.sql`](sql/phase3_collections_pkg.sql).
+Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.sql). Phase 1 queries 7–8 are in [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql). Phase 2 objects 9–12 are in [`sql/phase2_collections.sql`](sql/phase2_collections.sql). Phase 3 objects 13–16 are in [`sql/phase3_collections_pkg.sql`](sql/phase3_collections_pkg.sql). Phase 4 objects 17–20 are in [`sql/phase4_automations.sql`](sql/phase4_automations.sql).
 
 | # | Query | Techniques | Used in app |
 |---|---|---|---|
@@ -71,6 +72,10 @@ Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.
 | 14 | `DUNNING_NOTICES` table | Unique key on policy + level to prevent duplicate notices | Dunning Notices |
 | 15 | `COLLECTIONS_PKG` package | Spec vs. body, functions and procedures, cursor FOR loop, `%TYPE`, exception handling, private helper | Queue risk score, Generate Notices |
 | 16 | Package tests | Anonymous PL/SQL blocks, `DBMS_OUTPUT`, simulated dates | — |
+| 17 | Batch tables | Composite primary key, function-based unique index (one open alert per policy and type), run log | Batch Runs, Open Alerts |
+| 18 | `COLLECTIONS_PKG` batch procedures | `MERGE`, `SQL%ROWCOUNT`, `ROW_NUMBER()`, `PRAGMA AUTONOMOUS_TRANSACTION`, error logging with rollback and re-raise | Nightly batch |
+| 19 | APEX Automation | Scheduled daily at 2 AM (`FREQ=DAILY;BYHOUR=2`) | Nightly batch |
+| 20 | Batch tests | Baseline snapshot, full run, run history, alert counts | — |
 
 ---
 
@@ -96,9 +101,11 @@ Built in Oracle APEX. The analytics pages are public; the collections workbench 
 
 ### Collections workbench (login required)
 
-**Collections Queue.** Every policy with a missed payment, prioritized for a collector: overdue follow-ups first, then accounts never contacted, then in-progress, then closed. Within each group, accounts are ordered by a 0–100 **risk score** calculated in PL/SQL. Overdue rows are highlighted red, HIGH-risk bands dark red, and written-off balances amber.
+**Collections Queue.** An **Open Alerts** panel at the top lists what the nightly batch flagged (new high-risk accounts and broken promises), and collectors acknowledge each one inline without leaving the page. Below it, every policy with a missed payment, prioritized for a collector: overdue follow-ups first, then accounts never contacted, then in-progress, then closed. Within each group, accounts are ordered by a 0–100 **risk score** calculated in PL/SQL. Overdue rows are highlighted red, HIGH-risk bands dark red, and written-off balances amber.
 
 ![Collections Queue](screenshots/Collections-Queue.png)
+
+![Open Alerts](screenshots/Open-Alerts.png)
 
 **Policy Collections.** One policy's contact history in an editable Interactive Grid. Collectors can add, fix, or remove contact attempts inline, and the policy's queue status updates on save. An **Audit History** region shows every change to that history, with who made it, when, and the before/after values, captured by a database trigger.
 
@@ -114,6 +121,12 @@ Built in Oracle APEX. The analytics pages are public; the collections workbench 
 
 ![Dunning Notices](screenshots/Dunning-Notices.png)
 
+**Batch Runs.** A nightly APEX Automation runs the collections batch at 2 AM: it snapshots every policy's risk score, flags accounts that just moved into HIGH risk, flags broken promises to pay, and generates any dunning notices that are due. Every run is logged with its timing, counts, and any error, and a **Run Batch Now** button runs it on demand.
+
+![Batch Runs](screenshots/Batch-Runs.png)
+
+![Nightly Collections Batch automation](screenshots/Automation.png)
+
 ### Setup
 
 The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in your own workspace:
@@ -122,6 +135,8 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 3. Run [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql) to create the `POLICY_EXPLORER_V` view.
 4. Run [`sql/phase2_collections.sql`](sql/phase2_collections.sql) to create the collections table and queue view (the seed script at the end is optional).
 5. Run [`sql/phase3_collections_pkg.sql`](sql/phase3_collections_pkg.sql) to create the audit trigger, notices table, and `COLLECTIONS_PKG` package.
+6. Run [`sql/phase4_automations.sql`](sql/phase4_automations.sql) to create the batch tables and replace `COLLECTIONS_PKG` with the version that includes the batch procedures.
+7. Imported automations start out disabled, so set **Nightly Collections Batch** to **Active** under **Shared Components → Automations**.
 
 ---
 
@@ -153,6 +168,7 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 - **Early-month ramp-up.** Jan–Mar 2024 are excluded from the trend chart. The book was still ramping up and only first installments were due, which made those months look artificially low.
 - **Write-offs are per installment.** Only the missed installment is written off. Once a policy cancels, its remaining installments are never billed, so unearned premium isn't counted.
 - **Rule-based risk score.** The risk score is a transparent weighted rule set, not a trained model. Every score can be explained factor by factor, but the weights are judgment calls, not fitted to outcomes.
+- **Free workspace scheduling.** The free Oracle APEX workspace may limit or pause scheduled jobs on inactive workspaces, so the nightly run isn't guaranteed there. **Run Batch Now** runs the same procedure on demand.
 - **Seeded collections activity.** Contact history in the workbench is sample data from the seed script, tagged `SEED_DATA`. It shows how the queue behaves, not real collection results.
 - **Synthetic data.** The patterns are built in on purpose. The point of the project is the method, not the specific numbers.
 
@@ -166,6 +182,7 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 | v1.1 | Phase 1: Drill-down & exploration | Policy Explorer (faceted search), Policy Detail page, chart-to-explorer drill-down |
 | v1.2 | Phase 2: Collections workbench | Collections Queue, Policy Collections (editable grid), Log Contact modal form, login-protected pages |
 | v1.3 | Phase 3: PL/SQL business logic | Audit trigger, `COLLECTIONS_PKG` (risk score, dunning notices), Dunning Notices page, Audit History region |
+| v1.4 | Phase 4: Automations | Nightly batch (risk snapshots, new-high-risk and broken-promise alerts, dunning), APEX Automation, Batch Runs page, Open Alerts with inline acknowledge |
 
 **Implementation notes from Phase 1:**
 - `AUTOPAY_FLAG` loaded as an Oracle `BOOLEAN`, which the faceted search wizard can't use as a facet. The view converts it to `'Y'`/`'N'` text.
@@ -186,11 +203,18 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 - **Audit rows outlive the data.** The audit table has no foreign key to the actions table, so history survives when a contact attempt is deleted.
 - **New columns on a saved Interactive Report start hidden.** After changing a report's source, new columns land on the Do Not Display list and have to be added back through Actions → Columns.
 
+**Implementation notes from Phase 4:**
+- **Safe to rerun.** Every batch step can run twice without doubling anything: the snapshot uses `MERGE`, alerts are deduplicated, and notices respect the 14-day gap. Same-day reruns report zeros.
+- **Logs that survive a failure.** Run logging uses `PRAGMA AUTONOMOUS_TRANSACTION`, so if a step fails, the batch rolls back its work but the FAILED log row (with the error and backtrace) is still saved. The error is then re-raised so the scheduler also sees the failure.
+- **Bug found in testing: acknowledged alerts came back.** The first version only skipped a new-high-risk alert if an *open* one existed. After a collector acknowledged it, a same-day rerun compared today's snapshot to yesterday's again and raised a duplicate. The fix also skips any alert of that type already raised today, whatever its status.
+- **Baseline first, alerts second.** The very first snapshot has nothing to compare against, so it flags nothing instead of raising hundreds of "new" alerts on day one.
+- **IDs aren't timestamps.** Identity values are cached in blocks of 20 per session, so run IDs jumped (1, 21, 22, then 2 for a later run). The Batch Runs page sorts by start time, not ID.
+- **Refreshing a report resets its pagination.** Acknowledging an alert removes just that row on screen with JavaScript instead of refreshing the whole region, so a collector on page 2 of the alerts stays on page 2.
+
 ---
 
 ## Possible next steps
 
-- **Phase 4:** automations to flag newly at-risk policies nightly
 - **Phase 5:** roles (Collector vs. Manager) with authorization schemes
 - Add a seasonal factor to the forecast
 - Add a grace-period scenario (e.g., 10 → 20 days)
@@ -210,7 +234,8 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 │   ├── analysis_queries.sql          # Analysis queries 1–6
 │   ├── phase1_explorer_queries.sql   # Phase 1: explorer view + detail queries
 │   ├── phase2_collections.sql        # Phase 2: collections table, queue view, seed data
-│   └── phase3_collections_pkg.sql    # Phase 3: audit trigger, notices table, COLLECTIONS_PKG
+│   ├── phase3_collections_pkg.sql    # Phase 3: audit trigger, notices table, COLLECTIONS_PKG
+│   └── phase4_automations.sql        # Phase 4: batch tables, batch procedures, automation
 └── screenshots/
 ```
 
