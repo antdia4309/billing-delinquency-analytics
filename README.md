@@ -52,7 +52,7 @@ recreates the exact dataset used in the app. The CSVs were then loaded into Orac
 
 ## The SQL
 
-Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.sql). Phase 1 queries 7–8 are in [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql). Phase 2 objects 9–12 are in [`sql/phase2_collections.sql`](sql/phase2_collections.sql). Phase 3 objects 13–16 are in [`sql/phase3_collections_pkg.sql`](sql/phase3_collections_pkg.sql). Phase 4 objects 17–20 are in [`sql/phase4_automations.sql`](sql/phase4_automations.sql).
+Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.sql). Phase 1 queries 7–8 are in [`sql/phase1_explorer_queries.sql`](sql/phase1_explorer_queries.sql). Phase 2 objects 9–12 are in [`sql/phase2_collections.sql`](sql/phase2_collections.sql). Phase 3 objects 13–16 are in [`sql/phase3_collections_pkg.sql`](sql/phase3_collections_pkg.sql). Phase 4 objects 17–20 are in [`sql/phase4_automations.sql`](sql/phase4_automations.sql). Phase 5 setup and checks 21–23 are in [`sql/phase5_security.sql`](sql/phase5_security.sql).
 
 | # | Query | Techniques | Used in app |
 |---|---|---|---|
@@ -76,12 +76,48 @@ Analysis queries 1–6 are in [`sql/analysis_queries.sql`](sql/analysis_queries.
 | 18 | `COLLECTIONS_PKG` batch procedures | `MERGE`, `SQL%ROWCOUNT`, `ROW_NUMBER()`, `PRAGMA AUTONOMOUS_TRANSACTION`, error logging with rollback and re-raise | Nightly batch |
 | 19 | APEX Automation | Scheduled daily at 2 AM (`FREQ=DAILY;BYHOUR=2`) | Nightly batch |
 | 20 | Batch tests | Baseline snapshot, full run, run history, alert counts | — |
+| 21 | Roles and authorization setup | APEX Access Control roles, authorization schemes (documented, configured in APEX) | All workbench pages |
+| 22 | Security verification queries | `APEX_APPL_ACL_USER_ROLES`, `APEX_APPLICATION_PAGES`, `APEX_APPLICATION_PAGE_REGIONS`, `APEX_APPLICATION_LIST_ENTRIES` | — |
+| 23 | Security tests | Menu, URL, and browser-console attack checks as a collector | — |
 
 ---
 
 ## The app
 
-Built in Oracle APEX. The analytics pages are public; the collections workbench requires a login.
+Built in Oracle APEX. The analytics pages are public; the collections workbench requires a login, and what you can do there depends on your role.
+
+### Roles
+
+| | Collector | Manager |
+|---|---|---|
+| Work the queue, log contacts, acknowledge alerts | ✅ | ✅ |
+| Edit contact history | ✅ | ✅ |
+| Delete contact history | ❌ | ✅ |
+| View dunning notices | ✅ | ✅ |
+| Generate dunning notices | ❌ | ✅ |
+| Batch Runs and Run Batch Now | ❌ | ✅ |
+| Audit History | ❌ | ✅ |
+
+Roles are APEX Access Control roles checked by two authorization schemes, **Manager** and **Collector or Manager**, applied at six layers:
+
+| Layer | Example | What a collector gets |
+|---|---|---|
+| Menu | Batch Runs entry | Hidden |
+| Page | Batch Runs page | "Access denied" if reached by URL |
+| Button | Generate Notices | Hidden |
+| Process | Generate notices process | Doesn't run, even if triggered from the browser console |
+| Region | Audit History | Not rendered |
+| Grid operation | Delete Row | Not offered |
+
+**Hiding isn't securing.** The Generate Notices button just submits the page with a request of `GENERATE`, and anyone can do that from the browser console with `apex.submit('GENERATE')`. The Manager check on the **process** is what actually blocks it; hiding the button is just good UX. Both attacks were tested as a collector:
+
+![Collector view](screenshots/Collector-View.png)
+
+![Access denied by URL](screenshots/Access-Denied.png)
+
+![Collector grid without Delete Row](screenshots/Collector-Grid.png)
+
+### Analytics (public)
 
 ### Analytics (public)
 
@@ -137,6 +173,7 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 5. Run [`sql/phase3_collections_pkg.sql`](sql/phase3_collections_pkg.sql) to create the audit trigger, notices table, and `COLLECTIONS_PKG` package.
 6. Run [`sql/phase4_automations.sql`](sql/phase4_automations.sql) to create the batch tables and replace `COLLECTIONS_PKG` with the version that includes the batch procedures.
 7. Imported automations start out disabled, so set **Nightly Collections Batch** to **Active** under **Shared Components → Automations**.
+8. Role assignments aren't part of the export. Under **Shared Components → Application Access Control**, assign users the **Collector** and/or **Manager** roles. See [`sql/phase5_security.sql`](sql/phase5_security.sql) for the full setup and verification queries.
 
 ---
 
@@ -183,6 +220,7 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 | v1.2 | Phase 2: Collections workbench | Collections Queue, Policy Collections (editable grid), Log Contact modal form, login-protected pages |
 | v1.3 | Phase 3: PL/SQL business logic | Audit trigger, `COLLECTIONS_PKG` (risk score, dunning notices), Dunning Notices page, Audit History region |
 | v1.4 | Phase 4: Automations | Nightly batch (risk snapshots, new-high-risk and broken-promise alerts, dunning), APEX Automation, Batch Runs page, Open Alerts with inline acknowledge |
+| v1.5 | Phase 5: Roles and authorization | Collector and Manager roles, authorization schemes on pages, menu, buttons, processes, regions, and grid operations, Sign In link |
 
 **Implementation notes from Phase 1:**
 - `AUTOPAY_FLAG` loaded as an Oracle `BOOLEAN`, which the faceted search wizard can't use as a facet. The view converts it to `'Y'`/`'N'` text.
@@ -211,11 +249,19 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 - **IDs aren't timestamps.** Identity values are cached in blocks of 20 per session, so run IDs jumped (1, 21, 22, then 2 for a later run). The Batch Runs page sorts by start time, not ID.
 - **Refreshing a report resets its pagination.** Acknowledging an alert removes just that row on screen with JavaScript instead of refreshing the whole region, so a collector on page 2 of the alerts stays on page 2.
 
+**Implementation notes from Phase 5:**
+- **Server-side checks are the real security.** Every action a collector shouldn't take is blocked where it runs (the page, the process, the grid operation), not just hidden in the UI. The browser-console test proves the difference.
+- **Verify settings with the APEX dictionary views.** The menu authorizations looked saved but weren't: they'd been set from Page Designer's Shared Components tab, where **Save** saves the current page, not the menu. Querying `APEX_APPLICATION_LIST_ENTRIES` showed blanks, and the fix was editing the entries through **Shared Components → Navigation Menu**. That query also revealed the Phase 2 "Must Not Be Public User" menu settings had never saved either; page-level authentication had been the actual protection the whole time.
+- **Static IDs are stored lowercase.** APEX saved the role static IDs as `collector` and `manager`. The built-in "Is In Role or Group" scheme matches on role names, so it's unaffected, but hand-written PL/SQL checks have to match the lowercase IDs.
+- **Checked once per page view.** Authorization schemes re-evaluate on every page load, so removing someone's role takes effect immediately instead of at their next login.
+- **A sign-in path for public visitors.** Signing out lands on a public page as `nobody`, so a **Sign In** link in the navigation bar shows only to the public user.
+
 ---
 
 ## Possible next steps
 
-- **Phase 5:** roles (Collector vs. Manager) with authorization schemes
+- Self-service user management for managers (assign roles from inside the app)
+- REST endpoints for the risk score and alerts (ORDS)
 - Add a seasonal factor to the forecast
 - Add a grace-period scenario (e.g., 10 → 20 days)
 - Re-run the autopay scenario within score tiers to correct for selection bias
@@ -235,7 +281,8 @@ The APEX app export is in [`apex/f188112.sql`](apex/f188112.sql). To run it in y
 │   ├── phase1_explorer_queries.sql   # Phase 1: explorer view + detail queries
 │   ├── phase2_collections.sql        # Phase 2: collections table, queue view, seed data
 │   ├── phase3_collections_pkg.sql    # Phase 3: audit trigger, notices table, COLLECTIONS_PKG
-│   └── phase4_automations.sql        # Phase 4: batch tables, batch procedures, automation
+│   ├── phase4_automations.sql        # Phase 4: batch tables, batch procedures, automation
+│   └── phase5_security.sql           # Phase 5: roles and authorization setup, checks
 └── screenshots/
 ```
 
